@@ -55,8 +55,8 @@ karaf@root()> camel:route-list
 At this karaf CLI, the source db and the target solr collection can be queried via jdbc within karaf:
 ```
 karaf@root() > ds-list
-karaf@root()> query db-ds "select item_id from items"
-karaf@root()> query solr-ds "select id from gettingstarted"
+karaf@root()> query db-ds "select * from items"
+karaf@root()> query solr-ds "select id,date_dt,status_s from gettingstarted where id like 'item_id_*'"
 ```
 In order to stop the companion_demo network, press ^C in the terminal.
 To clean up the companion_demo network, run the command "docker compose down" in the folder where it was started.
