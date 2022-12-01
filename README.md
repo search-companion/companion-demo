@@ -121,5 +121,5 @@ karaf@root()> search *:*
 ### Feedback
 It should be clear by now that this implementation shows only a limited introduction of the capabilities of this integration framework. I hope this demo inspires you to take a deeper dive.
 
-We welcome feedback at [info@search-companion.org](mailto:info@search-companion.org).
+We welcome feedback and contributions! Contact us at [info@search-companion.org](mailto:info@search-companion.org).
 
