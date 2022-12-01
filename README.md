@@ -20,11 +20,19 @@ This starts up 4 containers and you should see the log output of the 4 container
  - companion_db: 1 db server (db1)
  - companion_karaf: 1 companion karaf server (karaf1) with admin on [http://localhost:8181/hawtio/](http://localhost:8181/hawtio/) (with username=karaf and password=karaf)
 
+In order to stop the companion_demo network, press ^C in the terminal.
+
+To clean up the companion_demo network, run the following command in the folder where the containers were started:
+```
+docker compose down
+```
+
+#### Dataimport
 The companion dataimport routine imports the data from the source db (database companion on db1) into the target solr collection (collection gettingstarted on solr1) and keeps it in sync when source db is being updated.
 
 There are 2 types of imports: 
-- full import: copies all source records to the target solr collection, optionally with alias handling (new collection and alias assignment)
-- delta import: copies only the changed records to the target solr collection
+- **full import**: copies all source records to the target solr collection, optionally with alias handling (new collection and alias assignment)
+- **delta import**: copies only the changed records to the target solr collection
 
 The full import process requires to be started manually (by starting the "data-import-full" camel route). 
 The full import will create a new collection ("gettingstarted" concatenated with the timestamp), read all records from the source db and push those to the target solr collection. After the final commit, an alias "gettingstarted"
@@ -40,9 +48,9 @@ The camel routes and the log can be accessed via:
 This hawtio console also allows you to inspect the details and metrics of the different camel routes via the "Camel" tab.
 
 
-2) the karaf CLI client for the companion_karaf container:
+2) the karaf CLI client for the companion_karaf container (with username=karaf and password=karaf):
 ```
-docker exec -it companion_karaf client
+ssh karaf@localhost -p 8101
 ```
 At the prompt of the karaf client, look at the log via the "log:tail" or the "log:display" (or using the "ld" alias) command:
 ```
@@ -58,9 +66,60 @@ karaf@root() > ds-list
 karaf@root()> query db-ds "select * from items"
 karaf@root()> query solr-ds "select id,date_dt,status_s from gettingstarted where id like 'item_id_*'"
 ```
-In order to stop the companion_demo network, press ^C in the terminal.
-To clean up the companion_demo network, run the command "docker compose down" in the folder where it was started.
 
-It should be clear by now that this is only a limited overview of the capabilities. I hope this demo inspires you to take a deeper dive in the source code.
+#### The search API
+The search api is available on [http://localhost:8181/api/](http://localhost:8181/api/). 
 
+For the swagger UI use [http://localhost:8181/api/searchapi/api-docs?url=/api/searchapi/openapi.json](http://localhost:8181/api/searchapi/api-docs?url=/api/searchapi/openapi.json).
+<img src="./assets/searchapi-swagger-openapi.png" width="700"/>
+
+There is a CLI client available to perform the request from within the karaf CLI. Use the following command for help on the available options:
+```
+karaf@root()> searchapi:search --help
+```
+E.g.:
+```
+karaf@root()> search *:*
+{
+  "solr.response" : {
+    "responseHeader" : {
+      "zkConnected" : true,
+      "status" : 0,
+      "QTime" : 4,
+      "params" : {
+        "q" : "*:*",
+        "fl" : "id",
+        "wt" : "javabin",
+        "version" : "2"
+      }
+    },
+    "response" : [ {
+      "id" : "item_id_19990101_084702"
+    }, {
+      "id" : "item_id_19990101_084802"
+    }, {
+      "id" : "item_id_19990101_084902"
+    }, {
+      "id" : "item_id_19990101_085002"
+    }, {
+      "id" : "item_id_19990101_085102"
+    }, {
+      "id" : "item_id_19990101_085202"
+    }, {
+      "id" : "item_id_19990101_085302"
+    }, {
+      "id" : "item_id_19990101_085402"
+    }, {
+      "id" : "item_id_19990101_085502"
+    }, {
+      "id" : "item_id"
+    } ]
+  }
+}
+```
+
+### Feedback
+It should be clear by now that this implementation shows only a limited introduction of the capabilities of this integration framework. I hope this demo inspires you to take a deeper dive.
+
+We welcome feedback at [info@search-companion.org](mailto:info@search-companion.org).
 
