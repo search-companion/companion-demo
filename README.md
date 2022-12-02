@@ -38,12 +38,16 @@ The full import process requires to be started manually (by starting the "data-i
 The full import will create a new collection ("gettingstarted" concatenated with the timestamp), read all records from the source db and push those to the target solr collection. After the final commit, an alias "gettingstarted"
 will be generated that points to the new collection in order to make it available for searching via "gettingstarted".
 
+The **field mapping** is configurable via the config file. Simple mappings can be done via configuration where solr fields are linked to incoming data. As an example, please review the config file of the demo that  is available [here](https://github.com/search-companion/companion/blob/main/companion-dataimport-example/src/main/resources/etc/companion.dataimport.example.cfg). 
+For more advanced mapping logic, a java class can be provided as mapper either via adding the mapper class to the context (`<bean id="solrMapper" class="path.to.your.SolrMapper"/>`) 
+or by adding the fully qualified class name in the config file: `solr.mapper.class=path.to.your.SolrMapper`.
+
 In the demo configuration, the delta import process will run periodically (every 20s): when 1 or more records are added to the source db, this delta import will pick up the record(s), perform some mapping towards the solr document and push the solr documents to the target solr collection.
 
 An additional camel route is set in this demo config that adds every minute a new record in the source db. This way, the delta import functionality can be followed as records are changed in the source db.
 
-The processes can be follewed up via the log of the karaf container.
-The camel routes and the log can be accessed via:
+The processes can be followed up via the log of the karaf container.
+This log (and the camel routes) can be accessed via:
 1) the hawtio admin console on our karaf container available on [http://localhost:8181/hawtio/](http://localhost:8181/hawtio/) after login (with username=karaf and password=karaf) and selecting the "Logs" tab.
 This hawtio console also allows you to inspect the details and metrics of the different camel routes via the "Camel" tab.
 
